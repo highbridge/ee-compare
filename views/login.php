@@ -1,11 +1,13 @@
-<form>
+<form action="<?php echo $site_url; ?>?action=login" method="post">
     <div>
         Username:
-        <input>
+        <input name="username">
     </div>
 
     <div>
         Password:
-        <input type="password">
+        <input name="password" type="password">
     </div>
+
+    <input type="submit" value="Login">
 </form>
