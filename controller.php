@@ -141,9 +141,9 @@ class Controller
             {
                 $redirect = array
                 (
-                    'action' => 'dashboard',
+                    'action' => 'import',
                     'message' => 'Upload completed!<br>Please wait while your uploaded data is imported...',
-                    'time' => 3
+                    'time' => 2
                 );
             }
 
@@ -155,13 +155,13 @@ class Controller
     {
         if($_SESSION['logged_in'])
         {
-            echo "Please wait, your data is being imported...";
             $this->model->import();
-            
+                        
             $this->view->display('redirect', array
             (
                 'action' => 'dashboard',
-                'time' => 0
+                'message' => 'Import completed!<br>Please wait while the differences are calculated...',
+                'time' => 2
             ));
         }
     }
