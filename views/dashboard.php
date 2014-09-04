@@ -8,7 +8,22 @@
     table .new-dev { background-color: rgba(93, 207, 5, 0.5); }
     table .new-prod { background-color: rgba(255, 239, 0, 0.5); }
     table .changed { background-color: rgba(233, 16, 5, 0.5); }
+
+    .table-wrap { display: none; }
+    h1:hover { text-decoration: underline; cursor: pointer; }
 </style>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function()
+    {
+        $('body').on('click', '.data-wrap h1', function()
+        {
+            $(this).parents('.data-wrap').find('.table-wrap').slideToggle();
+        });
+    });
+</script>
 
 <p><em>Hello, welcome to the dashboard.</em></p>
 
@@ -65,9 +80,10 @@
         
         foreach($differences as $type => $data)
         {
+            echo "<div class='data-wrap'>";
             echo "<h1>".ucwords(str_replace("_", " ", $type))."</h1>";
 
-            echo "<table>";
+            echo "<div class='table-wrap'><table>";
             echo "<tr>";
             echo "<th><!-- Empty heading for dev/prod marker --></th>";
             foreach($data['columns'] as $column)
@@ -102,7 +118,8 @@
                 echo "<tr class='$class'>$prod_row</tr>";
                 echo "<tr><td colspan='".(count($data['columns']) + 1)."'><hr></td></tr>";
             }
-            echo "</table>";
+            echo "</table></div>";
+            echo "</div>";
         }        
     }
     ?>
