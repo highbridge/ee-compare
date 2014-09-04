@@ -135,12 +135,27 @@ class Controller
                 $redirect = array
                 (
                     'action' => 'dashboard',
-                    'message' => 'Upload completed!<br>Redirecting...',
-                    'time' => 2
+                    'message' => 'Upload completed!<br>Please wait while your uploaded data is imported...',
+                    'time' => 3
                 );
             }
 
             $this->view->display('redirect', $redirect);
+        }
+    }
+
+    public function get_import()
+    {
+        if($_SESSION['logged_in'])
+        {
+            echo "Please wait, your data is being imported...";
+            $this->model->import();
+            
+            $this->view->display('redirect', array
+            (
+                'action' => 'dashboard',
+                'time' => 0
+            ));
         }
     }
 
