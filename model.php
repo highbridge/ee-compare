@@ -57,8 +57,6 @@ class Model
         if(file_exists('uploads/production_export.sql'))
         {
             exec("/usr/bin/mysql -u".escapeshellcmd(MYSQL_USER)." -p".escapeshellcmd(MYSQL_PASS)." -h".escapeshellcmd(MYSQL_HOST)." ".escapeshellcmd(DATABASE_2)." < uploads/production_export.sql");
-            echo "/usr/bin/mysql -u".escapeshellcmd(MYSQL_USER)." -p".escapeshellcmd(MYSQL_PASS)." -h".escapeshellcmd(MYSQL_HOST)." ".escapeshellcmd(DATABASE_2)." < uploads/production_export.sql<hr/>";
-
         }
     }
 
@@ -180,13 +178,20 @@ class Model
     function find_differences()
     {
         $different = array();
-// MOST IMPORTANT
+
+        // Compare actions
+        $dev_actions = $this->get('dev', 'select *, concat(class, "::", method) as action from `exp_actions`');
+        $prod_actions = $this->get('prod', 'select *, concat(class, "::", method) as action from `exp_actions`');
+
+        $different['actions'] = $this->compare('action', $dev_actions, $prod_actions);
+
 
         // Compare categories
         $dev_categories = $this->get('dev', 'select * from `exp_categories`');
         $prod_categories = $this->get('prod', 'select * from `exp_categories`');
 
         $different['categories'] = $this->compare('cat_url_title', $dev_categories, $prod_categories);
+
         
         // Compare category fields
         $dev_category_fields = $this->get('dev', 'select * from `exp_category_fields`');
@@ -194,26 +199,54 @@ class Model
 
         $different['category_fields'] = $this->compare('field_name', $dev_category_fields, $prod_category_fields);
 
-        // Compare fields
-        $dev_fields = $this->get('dev', 'select * from `exp_channel_fields`');
-        $prod_fields = $this->get('prod', 'select * from `exp_channel_fields`');
 
-        $different['fields'] = $this->compare('field_name', $dev_fields, $prod_fields);
+        // Compare channels
+        $dev_channels = $this->get('dev', 'select * from `exp_channels`');
+        $prod_channels = $this->get('prod', 'select * from `exp_channels`');
+
+        $different['channels'] = $this->compare('channel_name', $dev_channels, $prod_channels, array('channel_id', 'channel_name', 'channel_title'));
+
+
+        // Compare channel fields
+        $dev_channel_fields = $this->get('dev', 'select * from `exp_channel_fields`');
+        $prod_channel_fields = $this->get('prod', 'select * from `exp_channel_fields`');
+
+        $different['channel_fields'] = $this->compare('field_name', $dev_channel_fields, $prod_channel_fields);
+
+
+        // Compare fieldtypes?
+
         
         // Compare member fields
+        $dev_member_fields = $this->get('dev', 'select * from `exp_member_fields`');
+        $prod_member_fields = $this->get('prod', 'select * from `exp_member_fields`');
+
+        $different['member_fields'] = $this->compare('field_name', $dev_member_fields, $prod_member_fields);
+
+
+        // Compare member groups
+        $dev_member_groups = $this->get('dev', 'select * from `exp_member_groups`');
+        $prod_member_groups = $this->get('prod', 'select * from `exp_member_groups`');
+
+        $different['member_groups'] = $this->compare('field_name', $dev_member_groups, $prod_member_groups);
+
+
+
+        // Compare modules?
+
+
+        // Compare statuses
+        $dev_statuses = $this->get('dev', 'select * from `exp_statuses`');
+        $prod_statuses = $this->get('prod', 'select * from `exp_statuses`');
+
+        $different['statuses'] = $this->compare('cat_url_title', $dev_statuses, $prod_statuses);
+
+
         // Compare templates
         $dev_templates = $this->get('dev', 'select *, concat(tg.group_name, "/", t.template_name) as template_path from `exp_templates` as t, `exp_template_groups` as tg where t.group_id = tg.group_id');
         $prod_templates = $this->get('prod', 'select *, concat(tg.group_name, "/", t.template_name) as template_path from `exp_templates` as t, `exp_template_groups` as tg where t.group_id = tg.group_id');
 
         $different['templates'] = $this->compare('template_path', $dev_templates, $prod_templates, array('template_id', 'template_path', 'allow_php', 'php_parse_location'));
-
-// TODO:
-        // Compare actions
-        // Compare channels
-        // Compare member groups
-        // Compare modules
-        // Compare fieldtypes
-        // Compare statuses
         
         return $different;
     }
