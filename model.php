@@ -81,78 +81,98 @@ class Model
         $dev_primary = array();
         $dev_data = array();
 
-        foreach($dev as $key => $row)
+        foreach($dev as $row => $data)
         {
-            $dev_primary[$key] = $row[$column];
-            $dev_data[$key] = $row;
+            $dev_primary[$row] = $data[$column];
+            $dev_data[$row] = $data;
         }
 
         // Prepare prod data
         $prod_primary = array();
         $prod_data = array();
 
-        foreach($prod as $key => $row)
+        foreach($prod as $row => $data)
         {
-            $prod_primary[$key] = $row[$column];
-            $prod_data[$key] = $row;
+            $prod_primary[$row] = $data[$column];
+            $prod_data[$row] = $data;
         }
 
-        // Unique to dev
-        $dev_unique = array_diff($dev_primary, $prod_primary);
-        
-        // Unique to prod
-        $prod_unique = array_diff($prod_primary, $dev_primary);
-        
-        // Find rows which exist on both dev and prod
-        $matched = array_intersect($dev_primary, $prod_primary);
-        $changed = array();
-        $unchanged = 0;
-        $total = 0;
+        $columns = array();
+        $output_data = array();
+        $checked = array();
 
-        foreach($matched as $dev_row => $match)
+        // Loop through all dev data to find changes
+        foreach($dev_data as $dev_row => $data)
         {
-            $prod_row = array_search($match, $prod_primary);
-            $different = false;
-            $output = array('cols' => array(), 'dev' => array(), 'prod' => array());
+            // Search prod_primary for the requested column
+            $prod_row = array_search($data[$column], $prod_primary);
+            $row = array('dev' => array(), 'prod' => array(), 'changed' => false);
             
-            foreach($dev_data[$dev_row] as $col => $value)
+            foreach($data as $field => $value)
             {
-                if($display && !in_array($col, $display))
+                // If display is set, only process requested fields
+                if($display && !in_array($field, $display))
                     continue;
 
-                if($prod_data[$prod_row][$col] != $value)
-                    $different = true;
+                // If this is a new column, add it to the array!
+                if(!in_array($field, $columns))
+                    $columns[] = $field;
 
-                $output['cols'][] = $col;
-                $output['dev'][] = $value;
-                $output['prod'][] = $prod_data[$prod_row][$col];
+                $row['dev'][$field] = $value;
+
+                // Only compare/save prod data if a matching row was found
+                if($prod_row !== false)
+                {
+                    if($prod_data[$prod_row][$field] != $value)
+                        $row['changed'] = true;
+
+                    $row['prod'][$field] = $prod_data[$prod_row][$field];
+                }
             }
 
-            // Matched, but different
-            if($different)
+            $output_data[] = $row;
+
+            // Save the prod row if found so we know which have already been checked
+            if($prod_row !== false)
+                $checked[$prod_row] = true;
+        }
+
+        // Now loop through all prod data to see if we missed anything
+        foreach($prod_data as $prod_row => $data)
+        {
+            // Only process rows that haven't been checked already (this loop should only have new data from prod)
+            if(!$checked[$prod_row])
             {
-                $changed[] = $output;
-            }
+                $row = array('dev' => array(), 'prod' => array(), 'changed' => false);
             
-            // Matched, but the same
-            else
-            {
-                $unchanged++;
-            }
+                foreach($data as $field => $value)
+                {
+                    // If display is set, only process requested fields
+                    if($display && !in_array($field, $display))
+                        continue;
 
-            $total++;
+                    // If this is a new column, add it to the array!
+                    if(!in_array($field, $columns))
+                        $columns[] = $field;
+
+                    $row['prod'][$field] = $value;
+                }
+
+                $output_data[] = $row;
+            }
         }
         
+        // Desired return data...
+        // All columns
+        // Rows
+        // - Dev
+        // - Prod
+        // - Is changed?
+            
         return array
         (
-            'unique' => array
-            (
-                'dev' => $dev_unique,
-                'prod' => $prod_unique
-            ), 
-            'changed' => $changed,
-            'unchanged' => $unchanged,
-            'total' => $total
+            'columns' => $columns,
+            'rows' => $output_data
         );
     }
 
