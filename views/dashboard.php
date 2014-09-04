@@ -27,8 +27,11 @@
 <div>
     <?php
 
-    if($statistics)
-        print_r($statistics);
-
+    if($differences)
+    {
+        echo "<hr><pre>";
+        print_r($differences);
+        echo "</pre>";
+    }
     ?>
 </div>

@@ -71,11 +71,18 @@ class Controller
     {
         if($_SESSION['logged_in'])
         {
-            $this->view->display('dashboard', array
+            $dashboard = array
             (
                 'dev_upload' => filemtime('uploads/development_export.sql'),
                 'prod_upload' => filemtime('uploads/production_export.sql')
-            ));
+            );
+
+            if(file_exists("uploads/development_export.sql") && file_exists("uploads/production_export.sql"))
+            {
+                $dashboard['differences'] = $this->model->find_differences();
+            }
+            
+            $this->view->display('dashboard', $dashboard);
         }
         else
             $this->view->display('login');
@@ -159,7 +166,7 @@ class Controller
         }
     }
 
-    // General handler to send actions to their
+    // General function to send actions to their handlers
     public function action($action)
     {
         // Use the post handler if post/file data exists
