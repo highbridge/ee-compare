@@ -246,7 +246,7 @@ class Model
         $dev_templates = $this->get('dev', 'select *, concat(tg.group_name, "/", t.template_name) as template_path from `exp_templates` as t, `exp_template_groups` as tg where t.group_id = tg.group_id');
         $prod_templates = $this->get('prod', 'select *, concat(tg.group_name, "/", t.template_name) as template_path from `exp_templates` as t, `exp_template_groups` as tg where t.group_id = tg.group_id');
 
-        $different['templates'] = $this->compare('template_path', $dev_templates, $prod_templates, array('template_id', 'template_path', 'allow_php', 'php_parse_location'));
+        $different['templates'] = $this->compare('template_path', $dev_templates, $prod_templates, array('template_path', 'allow_php', 'php_parse_location'));
         
         return $different;
     }

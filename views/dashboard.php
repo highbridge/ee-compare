@@ -99,14 +99,22 @@
                 
                 foreach($data['columns'] as $column)
                 {
-                    $dev_row .= "<td>".$row['dev'][$column]."</td>";
-                    $prod_row .= "<td>".$row['prod'][$column]."</td>";
+                    if(!empty($row['dev']) && !empty($row['prod']) && $row['dev'][$column] != $row['prod'][$column])
+                        $class = "changed";
+                    else
+                        $class = "";
+                        
+                    $dev_row .= "<td class='$class'>".$row['dev'][$column]."</td>";
+                    $prod_row .= "<td class='$class'>".$row['prod'][$column]."</td>";
                 }
 
+/*
                 if($row['changed'])
                     $class = "changed";
                 else
                     $class = "";
+*/
+                $class = "";
 
                 if(empty($row['prod']))
                     $class = 'new-dev';
