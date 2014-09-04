@@ -14,7 +14,18 @@ class Controller
     
     public function get_login()
     {
-        $this->view->display('login');
+        if($_SESSION['logged_in'])
+        {
+            $this->view->display('redirect', array
+            (
+                'action' => 'dashboard',
+                'time' => 0
+            ));
+        }
+        else
+        {
+            $this->view->display('login');
+        }
     }
 
     public function post_login()
@@ -29,7 +40,7 @@ class Controller
             $this->view->display('redirect', array
             (
                 'action' => 'dashboard',
-                'message' => 'Login successful!<br />Redirecting...',
+                'message' => 'Login successful!<br>Redirecting...',
                 'time' => 2
             ));
         }
@@ -44,7 +55,35 @@ class Controller
             ));
         }
     }
-    
+
+    public function get_logout()
+    {
+        session_destroy();
+        $this->view->display('redirect', array
+        (
+            'action' => 'login',
+            'message' => 'Logout successful!<br>Redirecting...',
+            'time' => 2
+        ));
+    }
+
+    public function get_dashboard()
+    {
+        if($_SESSION['logged_in'])
+            $this->view->display('dashboard');
+        else
+            $this->view->display('login');
+    }
+
+    public function get_upload()
+    {
+        if($_SESSION['logged_in'])
+            $this->view->display('upload');
+        else
+            $this->view->display('login');
+    }
+
+    // General handler to send actions to their
     public function action($action)
     {
         // Use the post handler if post data exists

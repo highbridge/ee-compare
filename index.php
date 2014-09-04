@@ -31,8 +31,4 @@ $controller = new Controller();
 $action = ($_GET['action']) ? $_GET['action'] : 'login';
 $controller->action($action);
 
-echo "<hr>";
-print_r($_SESSION);
-
-
 ?>
