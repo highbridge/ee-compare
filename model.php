@@ -211,7 +211,7 @@ class Model
         $dev_channel_fields = $this->get('dev', 'select * from `exp_channel_fields`');
         $prod_channel_fields = $this->get('prod', 'select * from `exp_channel_fields`');
 
-        $different['channel_fields'] = $this->compare('field_name', $dev_channel_fields, $prod_channel_fields);
+        $different['channel_fields'] = $this->compare('field_name', $dev_channel_fields, $prod_channel_fields, array('field_id', 'group_id', 'field_name', 'field_label', 'field_instructions', 'field_type', 'field_required', 'field_search', 'field_is_hidden'));
 
 
         // Compare fieldtypes?
@@ -221,14 +221,14 @@ class Model
         $dev_member_fields = $this->get('dev', 'select * from `exp_member_fields`');
         $prod_member_fields = $this->get('prod', 'select * from `exp_member_fields`');
 
-        $different['member_fields'] = $this->compare('field_name', $dev_member_fields, $prod_member_fields);
+        $different['member_fields'] = $this->compare('m_field_name', $dev_member_fields, $prod_member_fields);
 
 
         // Compare member groups
         $dev_member_groups = $this->get('dev', 'select * from `exp_member_groups`');
         $prod_member_groups = $this->get('prod', 'select * from `exp_member_groups`');
 
-        $different['member_groups'] = $this->compare('field_name', $dev_member_groups, $prod_member_groups);
+        $different['member_groups'] = $this->compare('group_title', $dev_member_groups, $prod_member_groups);
 
 
 
@@ -239,7 +239,7 @@ class Model
         $dev_statuses = $this->get('dev', 'select * from `exp_statuses`');
         $prod_statuses = $this->get('prod', 'select * from `exp_statuses`');
 
-        $different['statuses'] = $this->compare('cat_url_title', $dev_statuses, $prod_statuses);
+        $different['statuses'] = $this->compare('status', $dev_statuses, $prod_statuses);
 
 
         // Compare templates
