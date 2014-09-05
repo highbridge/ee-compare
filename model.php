@@ -216,6 +216,13 @@ class Model
 
         // Compare fieldtypes?
 
+
+        // Compare matrix cols
+        $dev_matrix_cols = $this->get('dev', 'select *, concat(field_id, "/", col_name) as matrix_name from `exp_matrix_cols`');
+        $prod_matrix_cols = $this->get('prod', 'select *, concat(field_id, "/", col_name) as matrix_name from `exp_matrix_cols`');
+
+        $different['matrix_fields'] = $this->compare('matrix_name', $dev_matrix_cols, $prod_matrix_cols);
+
         
         // Compare member fields
         $dev_member_fields = $this->get('dev', 'select * from `exp_member_fields`');
